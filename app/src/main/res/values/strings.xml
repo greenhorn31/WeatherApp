@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">WeatherApp</string>
+    <string name="update_weather">Update Weather</string>
+    <string name="progress_bar_title">Loading</string>
+</resources>
