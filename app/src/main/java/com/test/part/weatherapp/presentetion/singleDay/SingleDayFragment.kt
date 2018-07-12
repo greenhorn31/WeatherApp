@@ -2,20 +2,21 @@ package com.test.part.weatherapp.presentetion.singleDay
 
 import android.app.Fragment
 import android.content.Context
-import android.location.Location
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
-import com.test.part.weatherapp.*
+import com.test.part.weatherapp.R
 import com.test.part.weatherapp.domain.MainWeatherApi
-import com.test.part.weatherapp.domain.WeatherModel
+import com.test.part.weatherapp.domain.datamodels.WeatherModel
+import com.test.part.weatherapp.domain.datamodels.WeatherModelByLocation
+import com.test.part.weatherapp.domain.repositories.SharedPrefRepository
 import com.test.part.weatherapp.presentetion.ProgressView
 import com.test.part.weatherapp.utils.LocalizationManager
-import kotlinx.android.synthetic.main.fragment_single_day_fragment.*
 
 class SingleDayFragment : Fragment(), SingleDayView {
 
@@ -23,6 +24,8 @@ class SingleDayFragment : Fragment(), SingleDayView {
     private lateinit var weatherApi: MainWeatherApi
     private lateinit var updateButton: Button
     private lateinit var progressView: ProgressView
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: SingleDayAdapter
 
     companion object {
         fun newInstance(weatherApi: MainWeatherApi): SingleDayFragment {
@@ -44,12 +47,21 @@ class SingleDayFragment : Fragment(), SingleDayView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        initRecycler()
         initListeners()
-        presenter = SingleDayPresenter(this, progressView, weatherApi, LocalizationManager(activity))
+        presenter = SingleDayPresenter(this, progressView, weatherApi, LocalizationManager(activity), SharedPrefRepository.getInstance())
     }
 
     private fun initView() {
         updateButton = activity.findViewById(R.id.buttonUpdateWeather)
+        recyclerView = activity.findViewById(R.id.recyclerView)
+    }
+
+    private fun initRecycler() {
+        adapter = SingleDayAdapter(listOf())
+        val layoutManager = LinearLayoutManager(activity)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = layoutManager
     }
 
     private fun initListeners() {
@@ -58,27 +70,12 @@ class SingleDayFragment : Fragment(), SingleDayView {
         }
     }
 
-    override fun showCurrentLocation(location: Location) {
-        var text: StringBuilder = StringBuilder(tvWeather.text)
-        text.append("current location: " + location.longitude + " " + location.latitude)
-        tvWeather.text = text
-
-    }
-
     override fun showError(message: String) {
         Toast.makeText(this.activity.applicationContext, message, Toast.LENGTH_LONG).show()
     }
 
-    override fun showWeather(weather: WeatherModel) {
-        tvWeather.text = "Weather latitude: " + weather.coordinates.latitude + " longitude: " + weather.coordinates.longitude + " " + weather.weather[0].main + " "
+    override fun updateWeather(weather: List<WeatherModel>) {
+        adapter.updateWeather(weather)
     }
-
-//    override fun showLoading() {
-//        progressView.showLoading()
-//    }
-//
-//    override fun hideLoading() {
-//        progressView.hideLoading()
-//    }
 
 }

@@ -4,29 +4,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tvWeather"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_margin="10dp"
         android:singleLine="false"
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textSize="16sp"
-        android:layout_margin="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonUpdateWeather"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/buttonUpdateWeather"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/buttonUpdateWeather"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/update_weather"
         android:layout_margin="10dp"
+        android:text="@string/update_weather"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvWeather" />
+        app:layout_constraintTop_toBottomOf="@id/recyclerView" />
 
 </android.support.constraint.ConstraintLayout>

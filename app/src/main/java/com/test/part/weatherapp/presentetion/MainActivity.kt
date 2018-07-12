@@ -15,6 +15,7 @@ import android.util.Log
 import com.test.part.weatherapp.*
 import com.test.part.weatherapp.utils.ProgressDialogManager
 import com.test.part.weatherapp.domain.RetrofitController
+import com.test.part.weatherapp.domain.repositories.SharedPrefRepository
 import com.test.part.weatherapp.presentetion.fewDays.FewDaysFragment
 import com.test.part.weatherapp.presentetion.singleDay.SingleDayFragment
 import com.test.part.weatherapp.utils.LocalizationManager
@@ -40,11 +41,12 @@ class MainActivity : AppCompatActivity(), MainView, ProgressView {
 
         if (savedInstanceState == null) {
             initUi()
+            SharedPrefRepository.getInstance().initialize(this)
             localizationManager = LocalizationManager(this)
             presenter = MainPresenter(this, retrofitController)
             checkLocationPermission()
             val fragment = SingleDayFragment.newInstance(retrofitController.getApi())
-            addFragment(fragment,false)
+            addFragment(fragment, false)
         }
     }
 

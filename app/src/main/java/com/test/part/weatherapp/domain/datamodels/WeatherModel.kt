@@ -1,4 +1,4 @@
-package com.test.part.weatherapp.domain
+package com.test.part.weatherapp.domain.datamodels
 
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
@@ -8,7 +8,9 @@ class WeatherModel(@SerializedName("coord")
                    @SerializedName("weather")
                    val weather: List<Weather>,
                    @SerializedName("main")
-                   val main: Main) : Serializable
+                   val main: Main,
+                   @SerializedName("name")
+                   val name: String) : Serializable
 
 class Coordinates(@SerializedName("lon")
                   val longitude: String,
