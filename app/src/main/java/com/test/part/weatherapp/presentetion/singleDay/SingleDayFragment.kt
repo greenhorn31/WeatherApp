@@ -11,33 +11,27 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import com.test.part.weatherapp.R
-import com.test.part.weatherapp.domain.MainWeatherApi
 import com.test.part.weatherapp.domain.datamodels.WeatherModel
-import com.test.part.weatherapp.domain.datamodels.WeatherModelByLocation
-import com.test.part.weatherapp.domain.repositories.SharedPrefRepository
-import com.test.part.weatherapp.presentetion.ProgressView
-import com.test.part.weatherapp.utils.LocalizationManager
 
 class SingleDayFragment : Fragment(), SingleDayView {
 
-    private lateinit var presenter: SingleDayPresenter
-    private lateinit var weatherApi: MainWeatherApi
+    private lateinit var presenter: WeatherPresenter
     private lateinit var updateButton: Button
-    private lateinit var progressView: ProgressView
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: SingleDayAdapter
 
+
     companion object {
-        fun newInstance(weatherApi: MainWeatherApi): SingleDayFragment {
+        fun newInstance(presenter: WeatherPresenter): SingleDayFragment {
             val fragment = SingleDayFragment()
-            fragment.weatherApi = weatherApi
+            fragment.presenter = presenter
             return fragment
         }
     }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        progressView = context as ProgressView
+        this.presenter.onAttach(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -49,7 +43,7 @@ class SingleDayFragment : Fragment(), SingleDayView {
         initView()
         initRecycler()
         initListeners()
-        presenter = SingleDayPresenter(this, progressView, weatherApi, LocalizationManager(activity), SharedPrefRepository.getInstance())
+        presenter.fetchWeather()
     }
 
     private fun initView() {
@@ -66,7 +60,7 @@ class SingleDayFragment : Fragment(), SingleDayView {
 
     private fun initListeners() {
         updateButton.setOnClickListener {
-            presenter.weatherRetrofitRequest()
+            presenter.fetchWeather()
         }
     }
 

@@ -6,8 +6,10 @@ import android.text.TextUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.test.part.weatherapp.domain.datamodels.WeatherModel
+import com.test.part.weatherapp.domain.datamodels.WeatherModelByLocation
 
-class SharedPrefRepository : CurrentWeatherRepository {
+//make it storage
+class SharedPrefRepository : CurrentWeatherStorage {
 
     override fun getWeather(): List<WeatherModel>? {
         weather?.let {
@@ -25,7 +27,6 @@ class SharedPrefRepository : CurrentWeatherRepository {
     override fun updateWeather(weather: List<WeatherModel>) {
         this.weather = weather
         preferences.edit().putString(WEATHER, Gson().toJson(weather)).apply()
-
     }
 
     private var weather: List<WeatherModel>? = null
@@ -43,7 +44,7 @@ class SharedPrefRepository : CurrentWeatherRepository {
 
         private var instance: SharedPrefRepository = SharedPrefRepository()
 
-        fun getInstance(): CurrentWeatherRepository {
+        fun getInstance(): CurrentWeatherStorage {
             return instance
         }
 

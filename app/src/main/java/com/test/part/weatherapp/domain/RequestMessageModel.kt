@@ -7,10 +7,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 
-class RequestMessageModel(private val weatherApi: MainWeatherApi) {
+class RequestMessageModel(private val weatherApi: MainWeatherApi): MainWeatherApi {
 
-    fun getTodaysWeather(lat: Double, lon: Double): Observable<WeatherModelByLocation> {
-        return weatherApi.todaysWeather(lat, lon, "a28894f2156fab4dace6322bc558f60e")
+    //todo extract into BUILD CONFIG
+    private val appID = "a28894f2156fab4dace6322bc558f60e"
+
+    override fun todaysWeather(lat: Double, lon: Double, appid: String): Observable<WeatherModelByLocation> {
+        return weatherApi.todaysWeather(lat, lon, appID)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
     }

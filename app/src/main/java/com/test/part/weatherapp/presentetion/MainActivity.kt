@@ -13,24 +13,30 @@ import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.test.part.weatherapp.*
+import com.test.part.weatherapp.domain.RequestMessageModel
 import com.test.part.weatherapp.utils.ProgressDialogManager
 import com.test.part.weatherapp.domain.RetrofitController
 import com.test.part.weatherapp.domain.repositories.SharedPrefRepository
+import com.test.part.weatherapp.domain.repositories.WeatherRepository
 import com.test.part.weatherapp.presentetion.fewDays.FewDaysFragment
 import com.test.part.weatherapp.presentetion.singleDay.SingleDayFragment
+import com.test.part.weatherapp.presentetion.singleDay.SingleDayPresenter
 import com.test.part.weatherapp.utils.LocalizationManager
 
 class MainActivity : AppCompatActivity(), MainView, ProgressView {
 
     private val SERVER_URL: String = "https://rawgit.com/startandroid/data/master/messages/"
     private val WEATHER_SERVER_URL: String = "http://api.openweathermap.org/data/2.5/"
+
     private lateinit var presenter: MainPresenter
     private lateinit var progressBar: ProgressDialogManager
     private lateinit var tabLayout: TabLayout
 
     private lateinit var localizationManager: LocalizationManager
-    private val LOCATION_PERMISSION_REQUEST_CODE = 1134
 
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1134
+    }
 
     private val retrofitController = RetrofitController(WEATHER_SERVER_URL)
 
@@ -45,8 +51,8 @@ class MainActivity : AppCompatActivity(), MainView, ProgressView {
             localizationManager = LocalizationManager(this)
             presenter = MainPresenter(this, retrofitController)
             checkLocationPermission()
-            val fragment = SingleDayFragment.newInstance(retrofitController.getApi())
-            addFragment(fragment, false)
+
+            addFragment(singleDayFragment(), false)
         }
     }
 
@@ -70,6 +76,20 @@ class MainActivity : AppCompatActivity(), MainView, ProgressView {
         }
     }
 
+    private fun singleDayFragment(): SingleDayFragment{
+        val fragment = SingleDayFragment.newInstance(
+                SingleDayPresenter(
+                        this,
+                        WeatherRepository(
+                                RequestMessageModel(retrofitController.getApi()),
+                                SharedPrefRepository.getInstance()
+                        ),
+                        LocalizationManager(this)
+                )
+        )
+        return fragment
+    }
+
     private fun initUi() {
         progressBar = ProgressDialogManager(this)
         tabLayout = findViewById(R.id.tabLayout)
@@ -85,8 +105,7 @@ class MainActivity : AppCompatActivity(), MainView, ProgressView {
 
             override fun onTabSelected(tab: Tab) {
                 if (tab.position == 0) {
-                    val fragment = SingleDayFragment.newInstance(retrofitController.getApi())
-                    addFragment(fragment, false)
+                    addFragment(singleDayFragment(), false)
                 }
                 if (tab.position == 1) {
                     val fragment = FewDaysFragment.newInstance()
@@ -103,7 +122,6 @@ class MainActivity : AppCompatActivity(), MainView, ProgressView {
             ft.addToBackStack(fragment::class.java.simpleName)
         ft.commit()
     }
-
 
     override fun onBackPressed() {
         if (fragmentManager.backStackEntryCount > 1) {
